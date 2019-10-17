@@ -46,4 +46,9 @@ public class PoolManager : MonoBehaviour {
         if (poolItem.GetComponent<PoolItem>() != null)
             ReturnItemToPool(poolItem.GetComponent<PoolItem>());
     }
+
+    public void ReturnItemToPool(MonoBehaviour script)
+    {
+        ReturnItemToPool(script.gameObject);
+    }
 }

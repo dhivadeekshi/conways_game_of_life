@@ -48,8 +48,13 @@ public class BoardOfLife : MonoBehaviour {
         return tileObject.GetComponent<Tile>();
     }
 
-    public void PopulateBoard(List<TileLocation> initialLife)
+    public Vector3 GetTilePositionFor(TileLocation tileLocation)
     {
+        return GetTilePositionFor(tileManager.GetTileIndexFor(tileLocation));
+    }
 
+    public Vector3 GetTilePositionFor(int index)
+    {
+        return tilesOfLife[index].transform.position;
     }
 }

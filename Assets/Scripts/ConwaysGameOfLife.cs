@@ -12,14 +12,15 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private Transform lifeContainer;
 
     private BoardOfLife boardOfLife;
-    private List<Life> lifeActive = new List<Life>();
+    //private List<Life> lifeActive = new List<Life>();
+    private Dictionary<int, Life> lifeActive = new Dictionary<int, Life>(); // Holds the life on tile index
 
 	// Use this for initialization
 	void Start () {
         CreateElementPools();
         CreateActiveLifeContainer();
         CreateBoardOfLife();
-        CreateInitialPopulation();
+        CreateInitialPopulationToad();
         StartSimulation();
 
         // TEMP
@@ -45,17 +46,67 @@ public class ConwaysGameOfLife : MonoBehaviour {
         lifeContainer = lifeContainerObject.transform;
     }
 
-    private void CreateInitialPopulation()
+    private void CreateInitialPopulationLoaf()
     {
-
+        // Sample initial population for 6x6 board - loaf
+        List<TileLocation> population = new List<TileLocation>();
+        population.Add(new TileLocation(4, 2));
+        population.Add(new TileLocation(3, 3));
+        population.Add(new TileLocation(5, 3));
+        population.Add(new TileLocation(2, 4));
+        population.Add(new TileLocation(5, 4));
+        population.Add(new TileLocation(3, 5));
+        population.Add(new TileLocation(4, 5));
+        PopulateLife(population);
     }
 
-    private void CreateLifeAt(Vector2 position)
+    private void CreateInitialPopulationToad()
+    {
+        // Sample initial population for 6x6 board - toad
+        List<TileLocation> population = new List<TileLocation>();
+        population.Add(new TileLocation(4, 2));
+        population.Add(new TileLocation(5, 2));
+        population.Add(new TileLocation(4, 3));
+        population.Add(new TileLocation(5, 3));
+        population.Add(new TileLocation(2, 4));
+        population.Add(new TileLocation(3, 4));
+        population.Add(new TileLocation(2, 5));
+        population.Add(new TileLocation(3, 5));
+        PopulateLife(population);
+    }
+
+    private void PopulateLife(List<TileLocation> population)
+    {
+        foreach (var life in population)
+            CreateLifeAt(life);
+    }
+
+    private void CreateLifeAt(TileLocation location)
+    {
+        int tileIndex = boardOfLife.tileManager.GetTileIndexFor(location);
+        Vector3 tilePosition = boardOfLife.GetTilePositionFor(tileIndex);
+        Life life = CreateLifeAt(tilePosition);
+        lifeActive.Add(tileIndex, life);
+    }
+
+    private Life CreateLifeAt(Vector3 position)
     {
         GameObject lifeObject = PoolManager.Instance.GetItemFromPool(Constants.POOL_NAME_LIFE);
         lifeObject.transform.position = position;
         lifeObject.transform.SetParent(lifeContainer);
         lifeObject.SetActive(true);
+        return lifeObject.GetComponent<Life>();
+    }
+
+    private void LifeDiedAt(int index)
+    {
+        Life life = null;
+        lifeActive.TryGetValue(index, out life);
+        if(life != null)
+        {
+            PoolManager.Instance.ReturnItemToPool(life);
+            lifeActive.Remove(index);
+        }
     }
 	
 	// Update is called once per frame
