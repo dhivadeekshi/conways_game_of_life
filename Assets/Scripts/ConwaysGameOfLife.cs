@@ -5,50 +5,86 @@ using UnityEngine.Events;
 
 public class ConwaysGameOfLife : MonoBehaviour {
 
+    [SerializeField]
+    private GameObject lifePrefab;
+    [SerializeField]
+    private GameObject tilePrefab;
+    private Transform lifeContainer;
 
-    public GameObject lifePrefab;
-    public GameObject tilePrefab;
+    private BoardOfLife boardOfLife;
+    private List<Life> lifeActive = new List<Life>();
 
 	// Use this for initialization
 	void Start () {
+        CreateElementPools();
+        CreateActiveLifeContainer();
+        CreateBoardOfLife();
+        CreateInitialPopulation();
+        StartSimulation();
+    }
+
+    private void CreateElementPools()
+    {
         PoolManager.Instance.CreatePoolFor(Constants.POOL_NAME_LIFE, lifePrefab);
         PoolManager.Instance.CreatePoolFor(Constants.POOL_NAME_TILE, tilePrefab);
-
-        /*GameObject life = PoolManager.Instance.GetItemFromPool(Constants.POOL_NAME_LIFE);
-        life.transform.SetParent(transform);
-        life.SetActive(true);
-        GameObject tile = PoolManager.Instance.GetItemFromPool(Constants.POOL_NAME_TILE);
-        tile.transform.SetParent(transform);
-        tile.SetActive(true);
-
-        StartCoroutine("ReturnPoolItem", life);
-        StartCoroutine("ReturnPoolItem", tile);
-
-        UnityAction action = () =>
-        {
-            GameObject boardObject = new GameObject("BoardOfLife");
-            boardObject.AddComponent<BoardOfLife>().CreateBoard(10, 10, Vector2.one*2);
-        };
-        StartCoroutine(ExecuteAfter( 10, action));
-        */
     }
 
-    /*IEnumerator ExecuteAfter(int secs, UnityAction action)
+    private void CreateBoardOfLife(int row = 6, int col = 6)
     {
-        yield return new WaitForSeconds(secs);
-
-        action.Invoke();
+        GameObject boardObject = new GameObject("BoardOfLife");
+        boardOfLife = boardObject.AddComponent<BoardOfLife>();
+        boardOfLife.CreateBoard(col, row, Vector2.one * 2, 0.5f);
     }
 
-    IEnumerator ReturnPoolItem(GameObject poolObject)
+    private void CreateActiveLifeContainer()
     {
-        yield return new WaitForSeconds(10);
+        GameObject lifeContainerObject = new GameObject("ActiveLifeContainer");
+        lifeContainer = lifeContainerObject.transform;
+    }
 
-        PoolManager.Instance.ReturnItemToPool(poolObject.GetComponent<PoolItem>());
-    }*/
+    private void CreateInitialPopulation()
+    {
+
+    }
+
+    private void CreateLifeAt(Vector2 position)
+    {
+        GameObject lifeObject = PoolManager.Instance.GetItemFromPool(Constants.POOL_NAME_LIFE);
+        lifeObject.transform.position = position;
+        lifeObject.transform.SetParent(lifeContainer);
+        lifeObject.SetActive(true);
+    }
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+
+    private void StartSimulation()
+    {
+        StartCoroutine("SimulateGameOfLife");
+    }
+
+    IEnumerator SimulateGameOfLife()
+    {
+        while (true)
+        {
+            yield return IterateEvoltion();
+
+            //Debug.Log("Simulate Game Of Life at "+System.DateTime.Now);
+        }
+    }
+
+    IEnumerator IterateEvoltion()
+    {
+        for(int i=0;i<lifeActive.Count;i++)
+        {
+            yield return new WaitForEndOfFrame();
+
+        }
+
+        // Temp
+        //yield return new WaitForSeconds(5);
+    }
 }
+
