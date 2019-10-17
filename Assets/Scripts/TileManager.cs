@@ -11,6 +11,37 @@ public class TileManager {
         this.noOfCols = noOfCols;
     }
 
+    public IEnumerable<TileLocation> GetAllTileLocations()
+    {
+        for(int col = 1;col <= noOfCols; col++)
+        {
+            for (int row = 1; row <= noOfRows;row++)
+            {
+                yield return new TileLocation(row, col);
+            }
+        }
+    }
+
+    public IEnumerable<int> GetAllNeighbourTilesIndexFor(TileLocation tileLocation)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (i == 0 && j == 0)
+                    continue;
+
+                if (tileLocation.row + i >= 1 && tileLocation.col + j >= 1
+                    && tileLocation.row + i <= noOfRows && tileLocation.col + j <= noOfCols)
+                {
+                    int tileIndex = GetTileIndexFor(new TileLocation(tileLocation.row + i, tileLocation.col + j));
+                    ///int tileIndex = ((tileLocation.col - 1) * noOfRows) + (tileLocation.row - 1);
+                    yield return  tileIndex;
+                }
+            }
+        }
+    }
+
     public List<TileLocation> GetNeighbourTilesLocationFor(TileLocation tileLocation)
     {
         List<TileLocation> neighbours = new List<TileLocation>();

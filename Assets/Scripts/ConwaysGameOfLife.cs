@@ -12,19 +12,20 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private Transform lifeContainer;
 
     private BoardOfLife boardOfLife;
-    //private List<Life> lifeActive = new List<Life>();
-    private Dictionary<int, Life> lifeActive = new Dictionary<int, Life>(); // Holds the life on tile index
+    private TileManager tileManager { get { return boardOfLife.tileManager; } }
+    private Dictionary<int, Life> currentPopulation = new Dictionary<int, Life>(); // Holds the life on tile index
 
-	// Use this for initialization
-	void Start () {
+    private List<int> lifeDieInCells = new List<int>(); // To kill life on every iteration
+    private List<int> lifeSpawnInCells = new List<int>(); // To create new life on every iteration
+
+    // Use this for initialization
+    void Start () {
         CreateElementPools();
         CreateActiveLifeContainer();
         CreateBoardOfLife();
         CreateInitialPopulationToad();
+        //CreateInitialPopulationLoaf();
         StartSimulation();
-
-        // TEMP
-        TestTileManager.Execute();
     }
 
     private void CreateElementPools()
@@ -37,7 +38,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
     {
         GameObject boardObject = new GameObject("BoardOfLife");
         boardOfLife = boardObject.AddComponent<BoardOfLife>();
-        boardOfLife.CreateBoard(col, row, Vector2.one * 2, 0.5f);
+        boardOfLife.CreateBoard(col, row, Vector2.one * Constants.TILE_SIZE, Constants.TILE_GAP);
     }
 
     private void CreateActiveLifeContainer()
@@ -83,10 +84,10 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     private void CreateLifeAt(TileLocation location)
     {
-        int tileIndex = boardOfLife.tileManager.GetTileIndexFor(location);
+        int tileIndex = tileManager.GetTileIndexFor(location);
         Vector3 tilePosition = boardOfLife.GetTilePositionFor(tileIndex);
         Life life = CreateLifeAt(tilePosition);
-        lifeActive.Add(tileIndex, life);
+        currentPopulation.Add(tileIndex, life);
     }
 
     private Life CreateLifeAt(Vector3 position)
@@ -101,11 +102,11 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private void LifeDiedAt(int index)
     {
         Life life = null;
-        lifeActive.TryGetValue(index, out life);
+        currentPopulation.TryGetValue(index, out life);
         if(life != null)
         {
             PoolManager.Instance.ReturnItemToPool(life);
-            lifeActive.Remove(index);
+            currentPopulation.Remove(index);
         }
     }
 	
@@ -124,21 +125,63 @@ public class ConwaysGameOfLife : MonoBehaviour {
         while (true)
         {
             yield return IterateEvoltion();
-
-            //Debug.Log("Simulate Game Of Life at "+System.DateTime.Now);
+            yield return KillLifeInCells();
+            yield return SpawnLifeInCells();
         }
     }
 
     IEnumerator IterateEvoltion()
     {
-        for(int i=0;i<lifeActive.Count;i++)
+        int tileIndex, neighbourCount;
+        foreach(var tileLocation in tileManager.GetAllTileLocations())
         {
-            yield return new WaitForEndOfFrame();
+            neighbourCount = 0;
+            tileIndex = tileManager.GetTileIndexFor(tileLocation);
+            /// Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+            /// Any live cell with two or three live neighbours lives on to the next generation.
+            /// Any live cell with more than three live neighbours dies, as if by overpopulation.
+            /// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+            foreach (var neighbourTile in tileManager.GetAllNeighbourTilesIndexFor(tileLocation))
+            {
+                if (currentPopulation.ContainsKey(neighbourTile))
+                    neighbourCount++;
+            }
+
+            // Create new life
+            if (neighbourCount == 3 && !currentPopulation.ContainsKey(tileIndex))
+                lifeSpawnInCells.Add(tileIndex);
+            // Kill life
+            else if ((neighbourCount < 2 || neighbourCount > 3) && currentPopulation.ContainsKey(tileIndex))
+                lifeDieInCells.Add(tileIndex);
+            // Temp -------------------------
+            /*Debug.Log("NewLifein");
+            lifeSpawnInCells.PrintAllElements();
+            Debug.Log("Dies in");
+            lifeDieInCells.PrintAllElements();*/
+            // -------------------------------
 
         }
+        yield return null;
+    }
 
-        // Temp
-        //yield return new WaitForSeconds(5);
+    IEnumerator SpawnLifeInCells()
+    {
+        foreach(var tileIndex in lifeSpawnInCells)
+        {
+            CreateLifeAt(tileManager.GetTileLocationFromIndex(tileIndex));
+        }
+        lifeSpawnInCells.Clear();
+        yield return null;
+    }
+
+    IEnumerator KillLifeInCells()
+    {
+        foreach(var tileIndex in lifeDieInCells)
+        {
+            LifeDiedAt(tileIndex);
+        }
+        lifeDieInCells.Clear();
+        yield return null;
     }
 }
 
