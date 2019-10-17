@@ -40,4 +40,10 @@ public class PoolManager : MonoBehaviour {
         PoolContainer poolContainer = poolContainers.Find((x) => { return x.IsPoolOf(poolItem.PoolName); });
         poolContainer.ReturnItemToPool(poolItem);
     }
+
+    public void ReturnItemToPool(GameObject poolItem)
+    {
+        if (poolItem.GetComponent<PoolItem>() != null)
+            ReturnItemToPool(poolItem.GetComponent<PoolItem>());
+    }
 }
