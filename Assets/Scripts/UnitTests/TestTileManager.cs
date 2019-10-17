@@ -31,8 +31,7 @@ public class TestTileManager
             {
                 if (index != tileManager.GetTileIndexFor(new TileLocation(j, i)))
                 {
-                    error = prefixMessage
-                        + " GetTileIndexFor " + new TileLocation(j, i) + " failed"
+                    error += "GetTileIndexFor " + new TileLocation(j, i) + " failed"
                         + " ActualIndex = " + index
                         + " ReceivedIndex = " + tileManager.GetTileIndexFor(new TileLocation(j, i)) + "\n";
                 }
@@ -50,8 +49,7 @@ public class TestTileManager
             location = tileManager.GetTileLocationFromIndex(i);
             if (!location.Equals(new TileLocation(row, col)))
             {
-                error = prefixMessage
-                    + " GetTileLocationFromIndex " + i + " failed"
+                error += "GetTileLocationFromIndex " + i + " failed"
                     + " ActualLocation = " + new TileLocation(row, col)
                     + " ReceivedIndex = " + location + "\n";
             }
@@ -68,6 +66,7 @@ public class TestTileManager
         // Check Neighbors Index
 
 
+        if (error != "") error = prefixMessage + error;
         return true;
     }
 }
