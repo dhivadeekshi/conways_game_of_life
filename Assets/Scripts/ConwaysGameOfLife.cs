@@ -21,6 +21,9 @@ public class ConwaysGameOfLife : MonoBehaviour {
         CreateBoardOfLife();
         CreateInitialPopulation();
         StartSimulation();
+
+        // TEMP
+        TestTileManager.Execute();
     }
 
     private void CreateElementPools()

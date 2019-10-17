@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class BoardOfLife : MonoBehaviour {
 
-    public List<Tile> tilesOfLife = new List<Tile>();
+    public TileManager tileManager { get; private set; }
+    private List<Tile> tilesOfLife = new List<Tile>();
 
-    public void CreateBoard(int noOfColumns, int noOfRows, Vector2 tileSize, float tileGap = 0f)
+    public void CreateBoard(int noOfCols, int noOfRows, Vector2 tileSize, float tileGap = 0f)
     {
-        GameObject colObject;
-        Vector3 tilePosition = GetStartingTilePosition(noOfColumns, noOfRows, tileSize, tileGap);
-        Debug.Log(tilePosition);
+        tileManager = new TileManager(noOfRows, noOfCols);
 
-        for (int col = 0; col < noOfColumns; col++)
+        GameObject colObject;
+        Vector3 tilePosition = GetStartingTilePosition(noOfCols, noOfRows, tileSize, tileGap);
+
+        for (int col = 0; col < noOfCols; col++)
         {
             colObject = new GameObject("Col_" + col);
             colObject.transform.SetParent(transform);
@@ -50,11 +52,4 @@ public class BoardOfLife : MonoBehaviour {
     {
 
     }
-
-    public List<TileLocation> GetNeighbourTilesFor(TileLocation tileLocation)
-    {
-        return new List<TileLocation>();
-    }
-
-
 }
