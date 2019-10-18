@@ -30,11 +30,12 @@ public class ConwaysGameOfLife : MonoBehaviour {
     void Start ()
     {
         CreateBoardOfLife();
-        CreateInitialPopulation();
+        CreateRandomPopulation();
 
         StartSimulation();
     }
 
+    #region Initializers
     private void CreateElementPools()
     {
         PoolManager.Instance.CreatePoolFor(Constants.POOL_NAME_LIFE, lifePrefab);
@@ -53,16 +54,62 @@ public class ConwaysGameOfLife : MonoBehaviour {
         GameObject lifeContainerObject = new GameObject("ActiveLifeContainer");
         lifeContainer = lifeContainerObject.transform;
     }
+    #endregion
 
-    private void CreateInitialPopulation()
+    #region Create Population
+    private void CreateRandomPopulation()
     {
-        HashSet<int> populationIndexes = PopulationGenerator.GetRandomPopulation(6, 6, 25);
+        HashSet<int> populationIndexes = PopulationGenerator.GetRandomPopulation(6, 6);
         List<TileLocation> population = new List<TileLocation>();
         foreach (int index in populationIndexes)
             population.Add(tileManager.GetTileLocationFromIndex(index));
         PopulateLife(population);
     }
 
+    private void CreateToadPopulation()
+    {
+        PopulateLife(PopulationGenerator.GetPopulationToad());
+    }
+
+    private void CreateLoadPopulation()
+    {
+        PopulateLife(PopulationGenerator.GetPopulationLoaf());
+    }
+    #endregion
+
+    #region Retry Simulation
+    public void RetrySimulation(UnityAction loadPopulation)
+    {
+        StopAllCoroutines();
+
+        // Clear the current Population
+        lifeDieInCells.AddRange(currentPopulation.Keys);
+        StartCoroutine("KillLifeInCells");
+
+        // Create new initial population
+        loadPopulation.Invoke();
+
+        // Start simulation
+        StartSimulation();
+    }
+
+    public void LoadRandomSimulation()
+    {
+        RetrySimulation(CreateRandomPopulation);
+    }
+
+    public void LoadToadSimulation()
+    {
+        RetrySimulation(CreateToadPopulation);
+    }
+
+    public void LoadLoafSimulation()
+    {
+        RetrySimulation(CreateLoadPopulation);
+    }
+    #endregion
+
+    #region Manipulate life
     private void PopulateLife(List<TileLocation> population)
     {
         isPopulationReady = false;
@@ -101,12 +148,9 @@ public class ConwaysGameOfLife : MonoBehaviour {
             currentPopulation.Remove(index);
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    #endregion
 
+    #region Simulation
     private void StartSimulation()
     {
         StartCoroutine("SimulateGameOfLife");
@@ -179,5 +223,6 @@ public class ConwaysGameOfLife : MonoBehaviour {
             yield return new WaitForEndOfFrame();
         isPopulationReady = true;
     }
+    #endregion
 }
 

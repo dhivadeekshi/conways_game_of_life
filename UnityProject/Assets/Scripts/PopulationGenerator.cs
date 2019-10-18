@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class PopulationGenerator {
 
-    public static List<TileLocation> CreateInitialPopulationLoaf()
+    public static List<TileLocation> GetPopulationLoaf()
     {
         // Sample initial population for 6x6 board - loaf
         List<TileLocation> population = new List<TileLocation>();
@@ -17,7 +17,7 @@ public class PopulationGenerator {
         return population;
     }
 
-    public static List<TileLocation> CreateInitialPopulationToad()
+    public static List<TileLocation> GetPopulationToad()
     {
         // Sample initial population for 6x6 board - toad
         List<TileLocation> population = new List<TileLocation>();

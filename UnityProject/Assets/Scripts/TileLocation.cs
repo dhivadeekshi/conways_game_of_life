@@ -19,4 +19,10 @@
         return ((TileLocation)obj).row == this.row &&
             ((TileLocation)obj).col == this.col;
     }
+
+    // Added to avoid warning in editor
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
