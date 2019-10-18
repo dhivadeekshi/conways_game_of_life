@@ -5,68 +5,88 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>Conway’s game of life</title>
-<meta name="generator" content="Jekyll v3.8.5" />
-<meta property="og:title" content="Conway’s game of life" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="Conway’s game of life" />
-<meta property="og:description" content="Conway’s game of life" />
-<link rel="canonical" href="https://dhivadeekshi.github.io/conways_game_of_life/" />
-<meta property="og:url" content="https://dhivadeekshi.github.io/conways_game_of_life/" />
-<meta property="og:site_name" content="conways_game_of_life" />
-<script type="application/ld+json">
-{"headline":"Conway’s game of life","@type":"WebSite","url":"https://dhivadeekshi.github.io/conways_game_of_life/","name":"conways_game_of_life","description":"Conway’s game of life","@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+    <title>Conway’s game of life</title>
+    <meta name="generator" content="Jekyll v3.8.5" />
+    <meta property="og:title" content="Conway’s game of life" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="description" content="Conway’s game of life" />
+    <meta property="og:description" content="Conway’s game of life" />
+    <link rel="canonical" href="https://dhivadeekshi.github.io/conways_game_of_life/" />
+    <meta property="og:url" content="https://dhivadeekshi.github.io/conways_game_of_life/" />
+    <meta property="og:site_name" content="conways_game_of_life" />
+    <script type="application/ld+json">
+    {"headline":"Conway’s game of life","@type":"WebSite","url":"https://dhivadeekshi.github.io/conways_game_of_life/","name":"conways_game_of_life","description":"Conway’s game of life","@context":"http://schema.org"}</script>
+    <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/conways_game_of_life/assets/css/style.css?v=ca5fb6d270a812d40d247d2f0293b6ead7e7a8a8">
+    
     <!-- Unity -->
-    <link rel="shortcut icon" href="Builds/Web/TemplateData/favicon.ico">
-    <link rel="stylesheet" href="Builds/Web/TemplateData/style.css">
-    <script src="Builds/Web/TemplateData/UnityProgress.js"></script>
-    <script src="Builds/Web/Build/UnityLoader.js"></script>
+    <link rel="shortcut icon" href="WebPage/TemplateData/favicon.ico">
+    <link rel="stylesheet" href="WebPage/TemplateData/style.css">
+    <script src="WebPage/TemplateData/UnityProgress.js"></script>
+    <script src="WebPage/Build/UnityLoader.js"></script>
     <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "Builds/Web/Build/Web.json", {
+      var gameInstance = UnityLoader.instantiate("gameContainer", "WebPage/Build/Web.json", {
         onProgress: UnityProgress
       });
     </script>
     <!-- Untiy -->
   </head>
+
   <body>
 
-<!-- Unity -->
-<div class="webgl-content">
-  <div id="gameContainer" style="width: 960px; height: 600px"></div>
-  <div class="footer">
-    <div class="webgl-logo"></div>
-    <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
-    <div class="title">ConwaysGameOfLife</div>
-  </div>
-</br>
-<!-- Unity -->
-
-    <div class="container-lg px-3 my-5 markdown-body">
-
-      <h1 id="conways-game-of-life">Conway’s game of life</h1>
-<p>The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970. <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Wiki</a></p>
-
-<p>The game is a zero-player game, meaning that its evolution is determined by its initial state, requiring no further input. One interacts with the Game of Life by creating an initial configuration and observing how it evolves, or, for advanced players, by creating patterns with particular properties.</p>
-
-<h2 id="rules">Rules</h2>
-<p>The universe of the Game of Life is an infinite, two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, alive or dead, (or populated and unpopulated, respectively). Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. At each step in time, the following transitions occur:</p>
-
-<ol>
-  <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
-  <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
-  <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
-  <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
-</ol>
-
-<p>The initial pattern constitutes the seed of the system. The first generation is created by applying the above rules simultaneously to every cell in the seed; births and deaths occur simultaneously, and the discrete moment at which this happens is sometimes called a tick. Each generation is a pure function of the preceding one. The rules continue to be applied repeatedly to create further generations.</p>
-
+    <!-- Unity -->
+    <!---</br>
+    <div class="webgl-content">
+      <div id="gameContainer" style="width: 960px; height: 600px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+        <div class="title">ConwaysGameOfLife</div>
       </div>
-
     </div>
+    </br>-->
+    <!-- Unity -->    
+  
+    <div class="container-lg px-3 my-5 markdown-body">
+        <!-- Unity -->
+      </br>
+      <div id="gameContainer" style="width: 960px; height: 600px"></div>
+      </br>
+      <!-- Unity -->
+      <h1 id="conways-game-of-life">Conway’s game of life</h1>
+      <p>The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician
+         John Horton Conway in 1970. <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Wiki</a>
+      </p>
+
+      <p>The game is a zero-player game, meaning that its evolution is determined by its initial state,
+         requiring no further input. One interacts with the Game of Life by creating an initial configuration and observing
+          how it evolves, or, for advanced players, by creating patterns with particular properties.
+      </p>
+
+      <h2 id="rules">Rules</h2>
+      <p>The universe of the Game of Life is an infinite, two-dimensional orthogonal grid of square cells,
+         each of which is in one of two possible states, alive or dead, (or populated and unpopulated, respectively).
+          Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically,
+           or diagonally adjacent. At each step in time, the following transitions occur:
+      </p>
+
+      <ol>
+        <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
+        <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+        <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
+        <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
+      </ol>
+
+      <p>The initial pattern constitutes the seed of the system.
+         The first generation is created by applying the above rules simultaneously to every cell in the seed;
+          births and deaths occur simultaneously, and the discrete moment at which this happens is sometimes called a tick.
+           Each generation is a pure function of the preceding one. The rules continue to be applied repeatedly to create further
+            generations.
+      </p>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
     <script>anchors.add();</script>
     
