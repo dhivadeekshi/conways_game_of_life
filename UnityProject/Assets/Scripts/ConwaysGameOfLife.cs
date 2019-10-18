@@ -20,6 +20,13 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     private bool isPopulationReady = false;
 
+    #region Getters
+    public int InitialPopulationCount { get; private set; }
+    public int CurrentPopulationCount { get { return currentPopulation.Count; } }
+    public int LifeToDieCount { get { return lifeDieInCells.Count; } }
+    public int LifeToBeBorn { get { return lifeSpawnInCells.Count; } }
+    #endregion
+
     void Awake()
     {
         CreateElementPools();
@@ -78,13 +85,15 @@ public class ConwaysGameOfLife : MonoBehaviour {
     #endregion
 
     #region Retry Simulation
-    public void RetrySimulation(UnityAction loadPopulation)
+    IEnumerator RetrySimulation(UnityAction loadPopulation)
     {
-        StopAllCoroutines();
+        // Clear new life to be born
+        lifeSpawnInCells.Clear();
 
         // Clear the current Population
+        lifeDieInCells.Clear();
         lifeDieInCells.AddRange(currentPopulation.Keys);
-        StartCoroutine("KillLifeInCells");
+        yield return KillLifeInCells();
 
         // Create new initial population
         loadPopulation.Invoke();
@@ -95,17 +104,20 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     public void LoadRandomSimulation()
     {
-        RetrySimulation(CreateRandomPopulation);
+        StopAllCoroutines();
+        StartCoroutine(RetrySimulation(CreateRandomPopulation));
     }
 
     public void LoadToadSimulation()
     {
-        RetrySimulation(CreateToadPopulation);
+        StopAllCoroutines();
+        StartCoroutine(RetrySimulation(CreateToadPopulation));
     }
 
     public void LoadLoafSimulation()
     {
-        RetrySimulation(CreateLoadPopulation);
+        StopAllCoroutines();
+        StartCoroutine(RetrySimulation(CreateLoadPopulation));
     }
     #endregion
 
@@ -113,6 +125,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private void PopulateLife(List<TileLocation> population)
     {
         isPopulationReady = false;
+        InitialPopulationCount = population.Count;
         foreach (var life in population)
         {
             lifeSpawnInCells.Add(tileManager.GetTileIndexFor(life));
