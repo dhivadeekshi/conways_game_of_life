@@ -18,13 +18,20 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private List<int> lifeDieInCells = new List<int>(); // To kill life on every iteration
     private List<int> lifeSpawnInCells = new List<int>(); // To create new life on every iteration
 
-    // Use this for initialization
-    void Start () {
+    private bool isPopulationReady = false;
+
+    void Awake()
+    {
         CreateElementPools();
         CreateActiveLifeContainer();
+    }
+
+    // Use this for initialization
+    void Start ()
+    {
         CreateBoardOfLife();
-        CreateInitialPopulationToad();
-        //CreateInitialPopulationLoaf();
+        CreateInitialPopulation();
+
         StartSimulation();
     }
 
@@ -47,39 +54,24 @@ public class ConwaysGameOfLife : MonoBehaviour {
         lifeContainer = lifeContainerObject.transform;
     }
 
-    private void CreateInitialPopulationLoaf()
+    private void CreateInitialPopulation()
     {
-        // Sample initial population for 6x6 board - loaf
+        HashSet<int> populationIndexes = PopulationGenerator.GetRandomPopulation(6, 6, 25);
         List<TileLocation> population = new List<TileLocation>();
-        population.Add(new TileLocation(4, 2));
-        population.Add(new TileLocation(3, 3));
-        population.Add(new TileLocation(5, 3));
-        population.Add(new TileLocation(2, 4));
-        population.Add(new TileLocation(5, 4));
-        population.Add(new TileLocation(3, 5));
-        population.Add(new TileLocation(4, 5));
-        PopulateLife(population);
-    }
-
-    private void CreateInitialPopulationToad()
-    {
-        // Sample initial population for 6x6 board - toad
-        List<TileLocation> population = new List<TileLocation>();
-        population.Add(new TileLocation(4, 2));
-        population.Add(new TileLocation(5, 2));
-        population.Add(new TileLocation(4, 3));
-        population.Add(new TileLocation(5, 3));
-        population.Add(new TileLocation(2, 4));
-        population.Add(new TileLocation(3, 4));
-        population.Add(new TileLocation(2, 5));
-        population.Add(new TileLocation(3, 5));
+        foreach (int index in populationIndexes)
+            population.Add(tileManager.GetTileLocationFromIndex(index));
         PopulateLife(population);
     }
 
     private void PopulateLife(List<TileLocation> population)
     {
+        isPopulationReady = false;
         foreach (var life in population)
-            CreateLifeAt(life);
+        {
+            lifeSpawnInCells.Add(tileManager.GetTileIndexFor(life));
+        }
+        StartCoroutine("SpawnLifeInCells");
+        StartCoroutine("WaitForInitialPopulation");
     }
 
     private void CreateLifeAt(TileLocation location)
@@ -124,6 +116,9 @@ public class ConwaysGameOfLife : MonoBehaviour {
     {
         while (true)
         {
+            while (!isPopulationReady)
+                yield return new WaitForEndOfFrame();
+
             yield return IterateEvoltion();
             yield return KillLifeInCells();
             yield return SpawnLifeInCells();
@@ -135,31 +130,25 @@ public class ConwaysGameOfLife : MonoBehaviour {
         int tileIndex, neighbourCount;
         foreach(var tileLocation in tileManager.GetAllTileLocations())
         {
+            yield return new WaitForEndOfFrame();
             neighbourCount = 0;
             tileIndex = tileManager.GetTileIndexFor(tileLocation);
-            /// Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-            /// Any live cell with two or three live neighbours lives on to the next generation.
-            /// Any live cell with more than three live neighbours dies, as if by overpopulation.
-            /// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+            /// Any live cell with fewer than two live neighbors dies, as if by underpopulation.
+            /// Any live cell with two or three live neighbors lives on to the next generation.
+            /// Any live cell with more than three live neighbors dies, as if by overpopulation.
+            /// Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
             foreach (var neighbourTile in tileManager.GetAllNeighbourTilesIndexFor(tileLocation))
             {
                 if (currentPopulation.ContainsKey(neighbourTile))
                     neighbourCount++;
             }
 
-            // Create new life
+            // Create life
             if (neighbourCount == 3 && !currentPopulation.ContainsKey(tileIndex))
                 lifeSpawnInCells.Add(tileIndex);
             // Kill life
             else if ((neighbourCount < 2 || neighbourCount > 3) && currentPopulation.ContainsKey(tileIndex))
                 lifeDieInCells.Add(tileIndex);
-            // Temp -------------------------
-            /*Debug.Log("NewLifein");
-            lifeSpawnInCells.PrintAllElements();
-            Debug.Log("Dies in");
-            lifeDieInCells.PrintAllElements();*/
-            // -------------------------------
-
         }
         yield return null;
     }
@@ -171,7 +160,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
             CreateLifeAt(tileManager.GetTileLocationFromIndex(tileIndex));
         }
         lifeSpawnInCells.Clear();
-        yield return null;
+        yield return new WaitForEndOfFrame();
     }
 
     IEnumerator KillLifeInCells()
@@ -181,7 +170,14 @@ public class ConwaysGameOfLife : MonoBehaviour {
             LifeDiedAt(tileIndex);
         }
         lifeDieInCells.Clear();
-        yield return null;
+        yield return new WaitForEndOfFrame();
+    }
+
+    IEnumerator WaitForInitialPopulation()
+    {
+        while (lifeSpawnInCells.Count > 0)
+            yield return new WaitForEndOfFrame();
+        isPopulationReady = true;
     }
 }
 
