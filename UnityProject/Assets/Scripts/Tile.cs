@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
+    public GameObject tileObject;
+    public Material tileHighlightMterial;
+    public Material tileOriginalMaterial;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -13,4 +17,20 @@ public class Tile : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void ChangeTileMaterial(Material material)
+    {
+        if (material != null && tileObject != null && tileObject.GetComponent<MeshRenderer>() != null)
+            tileObject.GetComponent<MeshRenderer>().material = material;
+    }
+
+    public void HighlightTile()
+    {
+        ChangeTileMaterial(tileHighlightMterial);
+    }
+
+    public void ResetTileHighlight()
+    {
+        ChangeTileMaterial(tileOriginalMaterial);
+    }
 }

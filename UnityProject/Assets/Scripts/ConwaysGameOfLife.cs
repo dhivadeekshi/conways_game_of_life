@@ -20,6 +20,9 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     private bool isPopulationReady = false;
 
+    public UnityAction<List<int>> onPopulateLife;
+    public UnityAction onRetrySimulation;
+
     #region Getters
     public int InitialPopulationCount { get; private set; }
     public int CurrentPopulationCount { get { return currentPopulation.Count; } }
@@ -29,6 +32,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     void Awake()
     {
+        CreateListeners();
         CreateElementPools();
         CreateActiveLifeContainer();
     }
@@ -61,6 +65,13 @@ public class ConwaysGameOfLife : MonoBehaviour {
         GameObject lifeContainerObject = new GameObject("ActiveLifeContainer");
         lifeContainer = lifeContainerObject.transform;
     }
+
+    private void CreateListeners()
+    {
+        onPopulateLife += HighlightInitialTiles;
+        onPopulateLife += StartPopulation;
+        onRetrySimulation += ResetAllTileHighlights;
+    }
     #endregion
 
     #region Create Population
@@ -84,9 +95,24 @@ public class ConwaysGameOfLife : MonoBehaviour {
     }
     #endregion
 
+    #region Manipulate Tiles
+    private void HighlightInitialTiles(List<int> tiles)
+    {
+        boardOfLife.HighlightTiles(tiles);
+    }
+
+    private void ResetAllTileHighlights()
+    {
+        boardOfLife.ResetAllTileHighlights();
+    }
+    #endregion
+
     #region Retry Simulation
     IEnumerator RetrySimulation(UnityAction loadPopulation)
     {
+        if (onRetrySimulation != null)
+            onRetrySimulation.Invoke();
+
         // Clear new life to be born
         lifeSpawnInCells.Clear();
 
@@ -130,8 +156,8 @@ public class ConwaysGameOfLife : MonoBehaviour {
         {
             lifeSpawnInCells.Add(tileManager.GetTileIndexFor(life));
         }
-        StartCoroutine("SpawnLifeInCells");
-        StartCoroutine("WaitForInitialPopulation");
+        if (onPopulateLife != null)
+            onPopulateLife.Invoke(lifeSpawnInCells);
     }
 
     private void CreateLifeAt(TileLocation location)
@@ -167,6 +193,12 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private void StartSimulation()
     {
         StartCoroutine("SimulateGameOfLife");
+    }
+
+    private void StartPopulation(List<int> population)
+    {
+        StartCoroutine("SpawnLifeInCells");
+        StartCoroutine("WaitForInitialPopulation");
     }
 
     IEnumerator SimulateGameOfLife()

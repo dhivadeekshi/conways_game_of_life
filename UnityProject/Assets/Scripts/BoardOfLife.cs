@@ -57,4 +57,16 @@ public class BoardOfLife : MonoBehaviour {
     {
         return tilesOfLife[index].transform.position;
     }
+
+    public void ResetAllTileHighlights()
+    {
+        foreach (var tile in tilesOfLife)
+            tile.ResetTileHighlight();
+    }
+
+    public void HighlightTiles(List<int> tiles)
+    {
+        foreach (var tile in tiles)
+            tilesOfLife[tile].HighlightTile();
+    }
 }
