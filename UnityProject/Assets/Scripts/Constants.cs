@@ -9,4 +9,7 @@ public class Constants {
     public const float TILE_GAP = 0.5f;
 
     public readonly static Color TILE_HIGHLIGHT_COLOR = Color.yellow;
+
+    public const int NO_OF_ROWS = 6;
+    public const int NO_OF_COLS = 6;
 }

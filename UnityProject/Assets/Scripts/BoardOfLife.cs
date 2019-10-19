@@ -7,27 +7,40 @@ public class BoardOfLife : MonoBehaviour {
     public TileManager tileManager { get; private set; }
     private List<Tile> tilesOfLife = new List<Tile>();
 
+    public bool IsBoardCreated { get; private set; }
+
+    void Awake()
+    {
+        IsBoardCreated = false;
+    }
+
     public void CreateBoard(int noOfCols, int noOfRows, Vector2 tileSize, float tileGap = 0f)
     {
         tileManager = new TileManager(noOfRows, noOfCols);
+        StartCoroutine(CreateTiles(tileSize, tileGap));
+    }
 
+    IEnumerator CreateTiles(Vector2 tileSize, float tileGap)
+    {
         GameObject colObject;
-        Vector3 tilePosition = GetStartingTilePosition(noOfCols, noOfRows, tileSize, tileGap);
+        Vector3 tilePosition = GetStartingTilePosition(tileManager.NoOfCols, tileManager.NoOfRows, tileSize, tileGap);
 
-        for (int col = 0; col < noOfCols; col++)
+        for (int col = 0; col < tileManager.NoOfCols; col++)
         {
             colObject = new GameObject("Col_" + col);
             colObject.transform.SetParent(transform);
 
-            for (int row = 0; row < noOfRows; row++)
+            for (int row = 0; row < tileManager.NoOfRows; row++)
             {
                 tilesOfLife.Add(CreateTileAt(tilePosition, colObject.transform));
                 tilePosition += Vector3.forward * (tileSize.x + tileGap);
+                yield return new WaitForEndOfFrame();
             }
 
-            tilePosition -= Vector3.forward * (tileSize.y + tileGap) * noOfRows; // Resetting x Position
+            tilePosition -= Vector3.forward * (tileSize.y + tileGap) * tileManager.NoOfRows; // Resetting x Position
             tilePosition += Vector3.right * (tileSize.y + tileGap);
         }
+        IsBoardCreated = true;
     }
 
     private Vector3 GetStartingTilePosition(float cols, float rows, Vector2 tileSize, float tileGap)
@@ -68,5 +81,10 @@ public class BoardOfLife : MonoBehaviour {
     {
         foreach (var tile in tiles)
             tilesOfLife[tile].HighlightTile();
+    }
+
+    public IEnumerator WaitUntillBoardCreated()
+    {
+        yield return new WaitUntil(() => { return IsBoardCreated; });
     }
 }

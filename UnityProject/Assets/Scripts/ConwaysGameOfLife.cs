@@ -41,10 +41,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        CreateBoardOfLife();
-        CreateRandomPopulation();
-
-        isInitialized = true;
+        StartCoroutine("Initialize");
         StartSimulation();
     }
 
@@ -55,11 +52,21 @@ public class ConwaysGameOfLife : MonoBehaviour {
         PoolManager.Instance.CreatePoolFor(Constants.POOL_NAME_TILE, tilePrefab);
     }
 
-    private void CreateBoardOfLife(int row = 6, int col = 6)
+    IEnumerator Initialize()
+    {
+        CreateBoardOfLife();
+        yield return boardOfLife.WaitUntillBoardCreated();
+        CreateRandomPopulation();
+
+        yield return new WaitForEndOfFrame();
+        isInitialized = true;
+    }
+
+    private void CreateBoardOfLife()
     {
         GameObject boardObject = new GameObject("BoardOfLife");
         boardOfLife = boardObject.AddComponent<BoardOfLife>();
-        boardOfLife.CreateBoard(col, row, Vector2.one * Constants.TILE_SIZE, Constants.TILE_GAP);
+        boardOfLife.CreateBoard(Constants.NO_OF_COLS, Constants.NO_OF_ROWS, Vector2.one * Constants.TILE_SIZE, Constants.TILE_GAP);
     }
 
     private void CreateActiveLifeContainer()
