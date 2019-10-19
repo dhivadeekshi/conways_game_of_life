@@ -139,20 +139,29 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     public void LoadRandomSimulation()
     {
-        StopAllCoroutines();
-        StartCoroutine(RetrySimulation(CreateRandomPopulation));
+        if (isPopulationReady)
+        {
+            StopAllCoroutines();
+            StartCoroutine(RetrySimulation(CreateRandomPopulation));
+        }
     }
 
     public void LoadToadSimulation()
     {
-        StopAllCoroutines();
-        StartCoroutine(RetrySimulation(CreateToadPopulation));
+        if (isPopulationReady)
+        {
+            StopAllCoroutines();
+            StartCoroutine(RetrySimulation(CreateToadPopulation));
+        }
     }
 
     public void LoadLoafSimulation()
     {
-        StopAllCoroutines();
-        StartCoroutine(RetrySimulation(CreateLoadPopulation));
+        if (isPopulationReady)
+        {
+            StopAllCoroutines();
+            StartCoroutine(RetrySimulation(CreateLoadPopulation));
+        }
     }
     #endregion
 
