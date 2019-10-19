@@ -5,6 +5,9 @@ public class TileManager {
     private int noOfRows = 0;
     private int noOfCols = 0;
 
+    public int NoOfRows { get { return noOfRows; } }
+    public int NoOfCols { get { return noOfCols; } }
+
     public TileManager(int noOfRows, int noOfCols)
     {
         this.noOfRows = noOfRows;

@@ -19,6 +19,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
     private List<int> lifeSpawnInCells = new List<int>(); // To create new life on every iteration
 
     private bool isPopulationReady = false;
+    private bool isInitialized = false;
 
     public UnityAction<List<int>> onPopulateLife;
     public UnityAction onRetrySimulation;
@@ -43,6 +44,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
         CreateBoardOfLife();
         CreateRandomPopulation();
 
+        isInitialized = true;
         StartSimulation();
     }
 
@@ -77,7 +79,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
     #region Create Population
     private void CreateRandomPopulation()
     {
-        HashSet<int> populationIndexes = PopulationGenerator.GetRandomPopulation(6, 6);
+        HashSet<int> populationIndexes = PopulationGenerator.GetRandomPopulation(tileManager.NoOfRows, tileManager.NoOfCols);
         List<TileLocation> population = new List<TileLocation>();
         foreach (int index in populationIndexes)
             population.Add(tileManager.GetTileLocationFromIndex(index));
@@ -205,8 +207,8 @@ public class ConwaysGameOfLife : MonoBehaviour {
     {
         while (true)
         {
-            while (!isPopulationReady)
-                yield return new WaitForEndOfFrame();
+            yield return new WaitUntil(() => { return isInitialized; });
+            yield return new WaitUntil(() => { return isPopulationReady; });
 
             yield return IterateEvoltion();
             yield return KillLifeInCells();
@@ -239,7 +241,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
             else if ((neighbourCount < 2 || neighbourCount > 3) && currentPopulation.ContainsKey(tileIndex))
                 lifeDieInCells.Add(tileIndex);
         }
-        yield return null;
+        yield return new WaitForEndOfFrame();
     }
 
     IEnumerator SpawnLifeInCells()
@@ -264,8 +266,7 @@ public class ConwaysGameOfLife : MonoBehaviour {
 
     IEnumerator WaitForInitialPopulation()
     {
-        while (lifeSpawnInCells.Count > 0)
-            yield return new WaitForEndOfFrame();
+        yield return new WaitUntil(() => { return lifeSpawnInCells.Count == 0; });
         isPopulationReady = true;
     }
     #endregion
